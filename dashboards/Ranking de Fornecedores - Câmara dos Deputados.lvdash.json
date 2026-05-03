@@ -1,0 +1,279 @@
+{
+  "datasets": [
+    {
+      "name": "fornecedores_scatter",
+      "displayName": "Fornecedores - Dados Individuais",
+      "queryLines": [
+        "SELECT\n",
+        "  nomeFornecedor,\n",
+        "  total_recebido,\n",
+        "  qtde_deputados_atendidos,\n",
+        "  qtde_transacoes\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_ranking_fornecedores"
+      ]
+    },
+    {
+      "name": "top15_transacoes",
+      "displayName": "Top 15 Fornecedores por Transações",
+      "queryLines": [
+        "SELECT\n",
+        "  nomeFornecedor,\n",
+        "  qtde_transacoes\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_ranking_fornecedores\n",
+        "ORDER BY\n",
+        "  qtde_transacoes DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "top20_valor",
+      "displayName": "Top 20 Fornecedores por Valor",
+      "queryLines": [
+        "SELECT\n",
+        "  nomeFornecedor,\n",
+        "  total_recebido\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_ranking_fornecedores\n",
+        "ORDER BY\n",
+        "  total_recebido DESC\n",
+        "LIMIT 20"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "5800b999",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "top20_fornecedores_valor",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top20_valor",
+                  "fields": [
+                    {
+                      "name": "total_recebido",
+                      "expression": "`total_recebido`"
+                    },
+                    {
+                      "name": "nomeFornecedor",
+                      "expression": "`nomeFornecedor`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 20 Fornecedores por Valor Recebido",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_recebido",
+                  "axis": {
+                    "title": "Total Recebido (R$)"
+                  },
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "BRL",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Total Recebido",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "nomeFornecedor",
+                  "axis": {
+                    "title": "Fornecedor"
+                  },
+                  "displayName": "Fornecedor",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "top15_fornecedores_transacoes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top15_transacoes",
+                  "fields": [
+                    {
+                      "name": "nomeFornecedor",
+                      "expression": "`nomeFornecedor`"
+                    },
+                    {
+                      "name": "qtde_transacoes",
+                      "expression": "`qtde_transacoes`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 15 Fornecedores por Quantidade de Transações",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "nomeFornecedor",
+                  "axis": {
+                    "title": "Fornecedor",
+                    "labelAngle": 45
+                  },
+                  "displayName": "Fornecedor",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "qtde_transacoes",
+                  "axis": {
+                    "title": "Quantidade de Transações"
+                  },
+                  "displayName": "Quantidade de Transações",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_fornecedores",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fornecedores_scatter",
+                  "fields": [
+                    {
+                      "name": "qtde_transacoes",
+                      "expression": "`qtde_transacoes`"
+                    },
+                    {
+                      "name": "total_recebido",
+                      "expression": "`total_recebido`"
+                    },
+                    {
+                      "name": "qtde_deputados_atendidos",
+                      "expression": "`qtde_deputados_atendidos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Relação: Valor Recebido vs Deputados Atendidos",
+                "description": "Tamanho dos pontos representa a quantidade de transações",
+                "showTitle": true,
+                "showDescription": true
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_recebido",
+                  "axis": {
+                    "title": "Total Recebido (R$)"
+                  },
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "BRL",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Total Recebido",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "qtde_deputados_atendidos",
+                  "axis": {
+                    "title": "Quantidade de Deputados Atendidos"
+                  },
+                  "displayName": "Deputados Atendidos",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "size": {
+                  "fieldName": "qtde_transacoes",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Quantidade de Transações"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 9
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

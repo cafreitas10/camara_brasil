@@ -1,0 +1,553 @@
+{
+  "datasets": [
+    {
+      "name": "eventos_recentes",
+      "displayName": "Eventos Recentes",
+      "queryLines": [
+        "SELECT\n",
+        "  dataHoraInicio,\n",
+        "  descricaoTipo,\n",
+        "  localCamara\n",
+        "FROM\n",
+        "  workspace.default.silver_camara_fact_eventos\n",
+        "WHERE\n",
+        "  dataHoraInicio IS NOT NULL\n",
+        "ORDER BY\n",
+        "  dataHoraInicio DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "top_tipos_eventos",
+      "displayName": "Top 10 Tipos de Eventos",
+      "queryLines": [
+        "SELECT\n",
+        "  descricaoTipo,\n",
+        "  COUNT(*) as quantidade\n",
+        "FROM\n",
+        "  workspace.default.silver_camara_fact_eventos\n",
+        "WHERE\n",
+        "  descricaoTipo IS NOT NULL\n",
+        "GROUP BY\n",
+        "  descricaoTipo\n",
+        "ORDER BY\n",
+        "  quantidade DESC\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "total_eventos",
+      "displayName": "Total de Eventos",
+      "queryLines": [
+        "SELECT\n",
+        "  COUNT(*) as total\n",
+        "FROM\n",
+        "  workspace.default.silver_camara_fact_eventos"
+      ]
+    },
+    {
+      "name": "eventos_ao_longo_tempo",
+      "displayName": "Eventos ao Longo do Tempo",
+      "queryLines": [
+        "SELECT\n",
+        "  ano,\n",
+        "  mes,\n",
+        "  COUNT(*) as total_eventos\n",
+        "FROM\n",
+        "  workspace.default.silver_camara_fact_eventos\n",
+        "GROUP BY\n",
+        "  ano,\n",
+        "  mes\n",
+        "ORDER BY\n",
+        "  ano,\n",
+        "  mes"
+      ]
+    },
+    {
+      "name": "distribuicao_tipo",
+      "displayName": "Distribuição por Tipo",
+      "queryLines": [
+        "SELECT\n",
+        "  tipoDespesa,\n",
+        "  total_gasto\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_despesas_por_tipo\n",
+        "ORDER BY\n",
+        "  total_gasto DESC\n",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "detalhes_categoria",
+      "displayName": "Detalhes por Categoria",
+      "queryLines": [
+        "SELECT\n",
+        "  tipoDespesa,\n",
+        "  total_gasto,\n",
+        "  media_gasto,\n",
+        "  qtde_transacoes,\n",
+        "  qtde_deputados\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_despesas_por_tipo\n",
+        "ORDER BY\n",
+        "  total_gasto DESC"
+      ]
+    },
+    {
+      "name": "total_gasto",
+      "displayName": "Total Gasto",
+      "queryLines": [
+        "SELECT\n",
+        "  SUM(total_gasto) as total\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_despesas_por_tipo"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "0d2cbe73",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "counter_total_eventos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_eventos",
+                  "fields": [
+                    {
+                      "name": "total",
+                      "expression": "`total`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Eventos",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "line_eventos_tempo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_ao_longo_tempo",
+                  "fields": [
+                    {
+                      "name": "ano",
+                      "expression": "`ano`"
+                    },
+                    {
+                      "name": "total_eventos",
+                      "expression": "`total_eventos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Eventos ao Longo do Tempo",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "ano",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_eventos",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top_tipos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top_tipos_eventos",
+                  "fields": [
+                    {
+                      "name": "quantidade",
+                      "expression": "`quantidade`"
+                    },
+                    {
+                      "name": "descricaoTipo",
+                      "expression": "`descricaoTipo`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Tipos de Eventos",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "quantidade",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "descricaoTipo",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "table_eventos_recentes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_recentes",
+                  "fields": [
+                    {
+                      "name": "dataHoraInicio",
+                      "expression": "`dataHoraInicio`"
+                    },
+                    {
+                      "name": "descricaoTipo",
+                      "expression": "`descricaoTipo`"
+                    },
+                    {
+                      "name": "localCamara",
+                      "expression": "`localCamara`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Eventos Recentes",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "dataHoraInicio"
+                  },
+                  {
+                    "fieldName": "descricaoTipo"
+                  },
+                  {
+                    "fieldName": "localCamara"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_total_gasto",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "total_gasto",
+                  "fields": [
+                    {
+                      "name": "total",
+                      "expression": "`total`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Despesas",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total",
+                  "format": {
+                    "type": "number-currency",
+                    "abbreviation": "compact",
+                    "currencyCode": "BRL"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_distribuicao",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "distribuicao_tipo",
+                  "fields": [
+                    {
+                      "name": "total_gasto",
+                      "expression": "`total_gasto`"
+                    },
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribuição por Tipo de Despesa",
+                "showTitle": true
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "total_gasto",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "tipoDespesa",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_top_categorias",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "distribuicao_tipo",
+                  "fields": [
+                    {
+                      "name": "total_gasto",
+                      "expression": "`total_gasto`"
+                    },
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Categorias por Valor",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "total_gasto",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "tipoDespesa",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "table_detalhes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "detalhes_categoria",
+                  "fields": [
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    },
+                    {
+                      "name": "total_gasto",
+                      "expression": "`total_gasto`"
+                    },
+                    {
+                      "name": "media_gasto",
+                      "expression": "`media_gasto`"
+                    },
+                    {
+                      "name": "qtde_transacoes",
+                      "expression": "`qtde_transacoes`"
+                    },
+                    {
+                      "name": "qtde_deputados",
+                      "expression": "`qtde_deputados`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Detalhes por Categoria",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "tipoDespesa",
+                    "displayName": "Tipo de Despesa"
+                  },
+                  {
+                    "fieldName": "total_gasto",
+                    "format": {
+                      "type": "number-currency",
+                      "abbreviation": "compact",
+                      "currencyCode": "BRL"
+                    },
+                    "displayName": "Total Gasto"
+                  },
+                  {
+                    "fieldName": "media_gasto",
+                    "format": {
+                      "type": "number-currency",
+                      "abbreviation": "compact",
+                      "currencyCode": "BRL"
+                    },
+                    "displayName": "Média por Transação"
+                  },
+                  {
+                    "fieldName": "qtde_transacoes",
+                    "displayName": "Qtde Transações"
+                  },
+                  {
+                    "fieldName": "qtde_deputados",
+                    "displayName": "Qtde Deputados"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 6,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

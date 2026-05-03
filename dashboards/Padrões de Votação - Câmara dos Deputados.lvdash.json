@@ -1,0 +1,286 @@
+{
+  "datasets": [
+    {
+      "name": "padroes_votacao",
+      "displayName": "Padrões de Votação",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_padroes_votacao"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "533cef75",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "distribuicao_votos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "padroes_votacao",
+                  "fields": [
+                    {
+                      "name": "sum(qtde_votos)",
+                      "expression": "SUM(`qtde_votos`)"
+                    },
+                    {
+                      "name": "tipoVoto",
+                      "expression": "`tipoVoto`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribuição de Votos por Tipo",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  "#1E88E5",
+                  "#E53935",
+                  "#FDD835",
+                  "#FB8C00",
+                  "#43A047"
+                ]
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(qtde_votos)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Quantidade de Votos"
+                },
+                "color": {
+                  "fieldName": "tipoVoto",
+                  "displayName": "Tipo de Voto",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "comparacao_votos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "padroes_votacao",
+                  "fields": [
+                    {
+                      "name": "tipoVoto",
+                      "expression": "`tipoVoto`"
+                    },
+                    {
+                      "name": "sum(qtde_votos)",
+                      "expression": "SUM(`qtde_votos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Comparação de Votos por Tipo",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "tipoVoto",
+                  "axis": {
+                    "title": "Tipo de Voto"
+                  },
+                  "displayName": "Tipo de Voto",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(qtde_votos)",
+                  "axis": {
+                    "title": "Quantidade de Votos"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Quantidade de Votos",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "total_votos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "padroes_votacao",
+                  "fields": [
+                    {
+                      "name": "sum(qtde_votos)",
+                      "expression": "SUM(`qtde_votos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Votos",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(qtde_votos)",
+                  "displayName": "Total de Votos"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "total_deputados",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "padroes_votacao",
+                  "fields": [
+                    {
+                      "name": "sum(qtde_deputados)",
+                      "expression": "SUM(`qtde_deputados`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Deputados Distintos",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(qtde_deputados)",
+                  "displayName": "Deputados"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 8,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "total_votacoes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "padroes_votacao",
+                  "fields": [
+                    {
+                      "name": "sum(qtde_votacoes)",
+                      "expression": "SUM(`qtde_votacoes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Votações Distintas",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(qtde_votacoes)",
+                  "displayName": "Votações"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 8,
+            "width": 4,
+            "height": 4
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

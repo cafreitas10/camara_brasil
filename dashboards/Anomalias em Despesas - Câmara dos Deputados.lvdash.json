@@ -1,0 +1,1396 @@
+{
+  "datasets": [
+    {
+      "name": "top20_engajamento",
+      "displayName": "Top 20 Deputados por Engajamento",
+      "queryLines": [
+        "SELECT\n",
+        "  nome,\n",
+        "  sigla_partido,\n",
+        "  sigla_uf,\n",
+        "  score_engajamento,\n",
+        "  qtde_votacoes,\n",
+        "  qtde_frentes\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_engajamento_deputados\n",
+        "ORDER BY\n",
+        "  score_engajamento DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "engajamento_partido",
+      "displayName": "Engajamento por Partido",
+      "queryLines": [
+        "SELECT\n",
+        "  sigla_partido,\n",
+        "  AVG(score_engajamento) as score_medio,\n",
+        "  COUNT(*) as qtde_deputados\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_engajamento_deputados\n",
+        "WHERE\n",
+        "  sigla_partido IS NOT NULL\n",
+        "GROUP BY\n",
+        "  sigla_partido\n",
+        "ORDER BY\n",
+        "  score_medio DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "engajamento_geral",
+      "displayName": "Dados Gerais de Engajamento",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_engajamento_deputados"
+      ]
+    },
+    {
+      "name": "eventos_temporal",
+      "displayName": "Eventos por Mês",
+      "queryLines": [
+        "SELECT\n",
+        "  MAKE_DATE(ano, mes, 1) as data_mes,\n",
+        "  CAST(qtde_eventos AS INT) as qtde_eventos,\n",
+        "  CAST(qtde_tipos_eventos AS INT) as qtde_tipos_eventos\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_eventos_por_mes\n",
+        "ORDER BY\n",
+        "  ano,\n",
+        "  mes"
+      ]
+    },
+    {
+      "name": "eventos_ano",
+      "displayName": "Eventos por Ano",
+      "queryLines": [
+        "SELECT\n",
+        "  ano,\n",
+        "  SUM(qtde_eventos) as total_eventos,\n",
+        "  SUM(qtde_tipos_eventos) as total_tipos\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_eventos_por_mes\n",
+        "GROUP BY\n",
+        "  ano\n",
+        "ORDER BY\n",
+        "  ano"
+      ]
+    },
+    {
+      "name": "anomalias_top",
+      "displayName": "Top Anomalias em Despesas",
+      "queryLines": [
+        "SELECT\n",
+        "  nome,\n",
+        "  sigla_partido,\n",
+        "  sigla_uf,\n",
+        "  tipoDespesa,\n",
+        "  valor_liquido,\n",
+        "  media,\n",
+        "  z_score,\n",
+        "  data_documento\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_anomalias_despesas\n",
+        "WHERE\n",
+        "  z_score IS NOT NULL\n",
+        "ORDER BY\n",
+        "  z_score DESC\n",
+        "LIMIT 100"
+      ]
+    },
+    {
+      "name": "anomalias_stats",
+      "displayName": "Estatísticas de Anomalias",
+      "queryLines": [
+        "SELECT\n",
+        "  COUNT(*) as total_anomalias,\n",
+        "  AVG(z_score) as z_score_medio,\n",
+        "  AVG(valor_liquido) as valor_medio\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_anomalias_despesas\n",
+        "WHERE\n",
+        "  z_score IS NOT NULL\n",
+        "  AND z_score > 2"
+      ]
+    },
+    {
+      "name": "anomalias_por_tipo",
+      "displayName": "Anomalias por Tipo de Despesa",
+      "queryLines": [
+        "SELECT\n",
+        "  tipoDespesa,\n",
+        "  COUNT(*) as qtde_anomalias,\n",
+        "  AVG(z_score) as z_score_medio,\n",
+        "  AVG(valor_liquido) as valor_medio\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_anomalias_despesas\n",
+        "WHERE\n",
+        "  z_score IS NOT NULL\n",
+        "  AND z_score > 2\n",
+        "GROUP BY\n",
+        "  tipoDespesa\n",
+        "ORDER BY\n",
+        "  qtde_anomalias DESC\n",
+        "LIMIT 15"
+      ]
+    },
+    {
+      "name": "eventos_por_ano",
+      "displayName": "Eventos por Ano",
+      "queryLines": [
+        "SELECT\n",
+        "  CAST(ano AS INT) as ano,\n",
+        "  CAST(SUM(qtde_eventos) AS INT) as total_eventos\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_eventos_por_mes\n",
+        "GROUP BY\n",
+        "  ano\n",
+        "ORDER BY\n",
+        "  ano"
+      ]
+    },
+    {
+      "name": "eventos_metricas",
+      "displayName": "Métricas de Eventos",
+      "queryLines": [
+        "SELECT\n",
+        "  SUM(qtde_eventos) as total_eventos,\n",
+        "  AVG(qtde_eventos) as media_mensal\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_eventos_por_mes"
+      ]
+    },
+    {
+      "name": "deputados_anomalias",
+      "displayName": "Top 20 Deputados com Mais Anomalias",
+      "queryLines": [
+        "SELECT\n",
+        "  nome,\n",
+        "  COUNT(*) as qtde_anomalias,\n",
+        "  AVG(z_score) as z_score_medio,\n",
+        "  AVG(valor_liquido) as valor_medio\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_anomalias_despesas\n",
+        "WHERE\n",
+        "  z_score IS NOT NULL\n",
+        "GROUP BY\n",
+        "  nome\n",
+        "ORDER BY\n",
+        "  qtde_anomalias DESC\n",
+        "LIMIT 20"
+      ]
+    },
+    {
+      "name": "anomalias_por_partido",
+      "displayName": "Anomalias por Partido",
+      "queryLines": [
+        "SELECT\n",
+        "  sigla_partido,\n",
+        "  COUNT(*) as qtde_anomalias,\n",
+        "  AVG(z_score) as z_score_medio,\n",
+        "  AVG(valor_liquido) as valor_medio\n",
+        "FROM\n",
+        "  workspace.default.gold_camara_anomalias_despesas\n",
+        "WHERE\n",
+        "  z_score IS NOT NULL\n",
+        "  AND sigla_partido IS NOT NULL\n",
+        "GROUP BY\n",
+        "  sigla_partido\n",
+        "ORDER BY\n",
+        "  qtde_anomalias DESC\n",
+        "LIMIT 15"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "f4faee3d",
+      "displayName": "Page 1",
+      "layout": [
+        {
+          "widget": {
+            "name": "top20_deputados_engajamento",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "top20_engajamento",
+                  "fields": [
+                    {
+                      "name": "score_engajamento",
+                      "expression": "`score_engajamento`"
+                    },
+                    {
+                      "name": "nome",
+                      "expression": "`nome`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 20 Deputados por Score de Engajamento",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "score_engajamento",
+                  "axis": {
+                    "title": "Score de Engajamento (0-100)"
+                  },
+                  "displayName": "Score de Engajamento",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "nome",
+                  "axis": {
+                    "title": "Deputado"
+                  },
+                  "displayName": "Deputado",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_votacoes_engajamento",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "engajamento_geral",
+                  "fields": [
+                    {
+                      "name": "qtde_frentes",
+                      "expression": "`qtde_frentes`"
+                    },
+                    {
+                      "name": "qtde_votacoes",
+                      "expression": "`qtde_votacoes`"
+                    },
+                    {
+                      "name": "score_engajamento",
+                      "expression": "`score_engajamento`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Votações vs Score de Engajamento",
+                "description": "Tamanho dos pontos representa a quantidade de frentes parlamentares",
+                "showTitle": true,
+                "showDescription": true
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "qtde_votacoes",
+                  "axis": {
+                    "title": "Quantidade de Votações"
+                  },
+                  "displayName": "Quantidade de Votações",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "score_engajamento",
+                  "axis": {
+                    "title": "Score de Engajamento (0-100)"
+                  },
+                  "displayName": "Score de Engajamento",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "size": {
+                  "fieldName": "qtde_frentes",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Quantidade de Frentes"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "score_por_partido",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "engajamento_partido",
+                  "fields": [
+                    {
+                      "name": "sigla_partido",
+                      "expression": "`sigla_partido`"
+                    },
+                    {
+                      "name": "score_medio",
+                      "expression": "`score_medio`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Score Médio por Partido",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sigla_partido",
+                  "axis": {
+                    "title": "Partido",
+                    "labelAngle": 45
+                  },
+                  "displayName": "Partido",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "score_medio",
+                  "axis": {
+                    "title": "Score Médio de Engajamento"
+                  },
+                  "displayName": "Score Médio",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "contador_score_medio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "engajamento_geral",
+                  "fields": [
+                    {
+                      "name": "avg(score_engajamento)",
+                      "expression": "AVG(`score_engajamento`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Score Médio Geral",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(score_engajamento)",
+                  "displayName": "Score Médio"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "contador_total_deputados",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "engajamento_geral",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Deputados",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "displayName": "Deputados"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 18,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "contador_media_votacoes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "engajamento_geral",
+                  "fields": [
+                    {
+                      "name": "avg(qtde_votacoes)",
+                      "expression": "AVG(`qtde_votacoes`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Média de Votações",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(qtde_votacoes)",
+                  "displayName": "Média"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 18,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "area_tipos_eventos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_temporal",
+                  "fields": [
+                    {
+                      "name": "data_mes",
+                      "expression": "`data_mes`"
+                    },
+                    {
+                      "name": "sum(qtde_tipos_eventos)",
+                      "expression": "SUM(`qtde_tipos_eventos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Evolução dos Tipos de Eventos",
+                "showTitle": true
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "data_mes",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(qtde_tipos_eventos)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_total_eventos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_ano",
+                  "fields": [
+                    {
+                      "name": "sum(total_eventos)",
+                      "expression": "SUM(`total_eventos`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Eventos",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_eventos)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 34,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_anomalias",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_top",
+                  "fields": [
+                    {
+                      "name": "z_score",
+                      "expression": "`z_score`"
+                    },
+                    {
+                      "name": "valor_liquido",
+                      "expression": "`valor_liquido`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Z-Score vs Valor Líquido",
+                "description": "Anomalias detectadas: quanto maior o z-score, mais atípica é a despesa",
+                "showTitle": true
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "z_score",
+                  "axis": {
+                    "title": "Z-Score (Desvios Padrão)"
+                  },
+                  "displayName": "Z-Score",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "valor_liquido",
+                  "axis": {
+                    "title": "Valor Líquido (R$)"
+                  },
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "BRL",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "displayName": "Valor Líquido",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 34,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_anomalias_tipo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_por_tipo",
+                  "fields": [
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    },
+                    {
+                      "name": "qtde_anomalias",
+                      "expression": "`qtde_anomalias`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Anomalias por Tipo de Despesa",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "tipoDespesa",
+                  "axis": {
+                    "title": "Tipo de Despesa",
+                    "labelAngle": 45
+                  },
+                  "displayName": "Tipo",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "qtde_anomalias",
+                  "axis": {
+                    "title": "Quantidade de Anomalias"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Quantidade",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 40,
+            "width": 6,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "table_anomalias",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_top",
+                  "fields": [
+                    {
+                      "name": "nome",
+                      "expression": "`nome`"
+                    },
+                    {
+                      "name": "sigla_partido",
+                      "expression": "`sigla_partido`"
+                    },
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    },
+                    {
+                      "name": "valor_liquido",
+                      "expression": "`valor_liquido`"
+                    },
+                    {
+                      "name": "media",
+                      "expression": "`media`"
+                    },
+                    {
+                      "name": "z_score",
+                      "expression": "`z_score`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "rowsPerPage": 20,
+              "frame": {
+                "title": "Detalhes das Anomalias",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "nome",
+                    "contentAlignment": "left",
+                    "displayName": "Deputado"
+                  },
+                  {
+                    "fieldName": "sigla_partido",
+                    "contentAlignment": "center",
+                    "displayName": "Partido"
+                  },
+                  {
+                    "fieldName": "tipoDespesa",
+                    "contentAlignment": "left",
+                    "displayName": "Tipo de Despesa"
+                  },
+                  {
+                    "fieldName": "valor_liquido",
+                    "contentAlignment": "right",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "BRL",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      }
+                    },
+                    "displayName": "Valor"
+                  },
+                  {
+                    "fieldName": "media",
+                    "contentAlignment": "right",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "BRL",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      }
+                    },
+                    "displayName": "Média"
+                  },
+                  {
+                    "fieldName": "z_score",
+                    "contentAlignment": "right",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      }
+                    },
+                    "displayName": "Z-Score"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 73,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_total_anomalias",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_stats",
+                  "fields": [
+                    {
+                      "name": "total_anomalias",
+                      "expression": "`total_anomalias`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total de Anomalias",
+                "contentAlignment": "center",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "total_anomalias",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 83,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_zscore_medio",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_stats",
+                  "fields": [
+                    {
+                      "name": "z_score_medio",
+                      "expression": "`z_score_medio`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Z-Score Médio",
+                "contentAlignment": "center",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "z_score_medio",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 83,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_valor_max",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_stats",
+                  "fields": [
+                    {
+                      "name": "valor_medio",
+                      "expression": "`valor_medio`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Valor Médio Anômalo",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "valor_medio",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "BRL",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 60,
+            "width": 4,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "counter_media_eventos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_metricas",
+                  "fields": [
+                    {
+                      "name": "media_mensal",
+                      "expression": "`media_mensal`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Média Mensal de Eventos",
+                "showTitle": true,
+                "contentAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "media_mensal",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    }
+                  },
+                  "displayName": "Média Mensal"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 28,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "line_eventos_temporal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_temporal",
+                  "fields": [
+                    {
+                      "name": "data_mes",
+                      "expression": "`data_mes`"
+                    },
+                    {
+                      "name": "qtde_eventos",
+                      "expression": "`qtde_eventos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Evolução Temporal de Eventos",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "data_mes",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "qtde_eventos",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_eventos_ano",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eventos_por_ano",
+                  "fields": [
+                    {
+                      "name": "ano",
+                      "expression": "`ano`"
+                    },
+                    {
+                      "name": "total_eventos",
+                      "expression": "`total_eventos`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Eventos por Ano",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "ano",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_eventos",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 22,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_deputados_anomalias",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "deputados_anomalias",
+                  "fields": [
+                    {
+                      "name": "qtde_anomalias",
+                      "expression": "`qtde_anomalias`"
+                    },
+                    {
+                      "name": "nome",
+                      "expression": "`nome`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 20 Deputados com Mais Anomalias",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "qtde_anomalias",
+                  "axis": {
+                    "title": "Quantidade de Anomalias"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Quantidade de Anomalias",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "nome",
+                  "axis": {
+                    "title": "Deputado"
+                  },
+                  "displayName": "Deputado",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 48,
+            "width": 12,
+            "height": 10
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_anomalias_tipo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_por_tipo",
+                  "fields": [
+                    {
+                      "name": "qtde_anomalias",
+                      "expression": "`qtde_anomalias`"
+                    },
+                    {
+                      "name": "tipoDespesa",
+                      "expression": "`tipoDespesa`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Distribuição de Anomalias por Tipo",
+                "showTitle": true
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "qtde_anomalias",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Quantidade"
+                },
+                "color": {
+                  "fieldName": "tipoDespesa",
+                  "displayName": "Tipo de Despesa",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 58,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_anomalias_partido",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "anomalias_por_partido",
+                  "fields": [
+                    {
+                      "name": "sigla_partido",
+                      "expression": "`sigla_partido`"
+                    },
+                    {
+                      "name": "qtde_anomalias",
+                      "expression": "`qtde_anomalias`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Anomalias por Partido",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sigla_partido",
+                  "axis": {
+                    "title": "Partido",
+                    "labelAngle": 45
+                  },
+                  "displayName": "Partido",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "qtde_anomalias",
+                  "axis": {
+                    "title": "Quantidade de Anomalias"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Quantidade de Anomalias",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 65,
+            "width": 6,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}

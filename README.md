@@ -21,6 +21,7 @@ Este projeto implementa um pipeline completo de ingestão, transformação e an�
 - 🏗️ **Modelo dimensional** Star Schema na camada Silver
 - 📈 **KPIs analíticos**: engajamento, diversidade, anomalias
 - 📝 **Documentação automática** de tabelas em português
+- 📊 **2 Dashboards interativos** com 8 visualizações
 
 ---
 
@@ -128,6 +129,173 @@ O projeto é composto por 4 notebooks Jupyter executados sequencialmente:
 
 ---
 
+## 📊 Dashboards
+
+O projeto inclui **2 dashboards interativos** desenvolvidos no Databricks AI/BI, organizados na pasta `/Users/cafreitas@gmail.com/dashboards/`, com um total de **8 widgets** e **28 visualizações** para análise exploratória dos dados da Câmara dos Deputados.
+
+### Dashboards Disponíveis
+
+| # | Dashboard | Widgets | Descrição | Tabelas Utilizadas |
+|---|-----------|---------|-----------|-------------------|
+| 1 | **Eventos Legislativos** | 4 | Análise temporal e tipológica de eventos parlamentares | `silver_camara_fact_eventos` |
+| 2 | **Despesas por Categoria** | 4 | Análise financeira de despesas por tipo e categoria | `gold_camara_despesas_por_tipo` |
+
+### 📈 Dashboard 1: Eventos Legislativos - Câmara dos Deputados
+
+**Caminho:** `/Users/cafreitas@gmail.com/dashboards/Eventos Legislativos - Câmara dos Deputados.lvdash.json`
+
+Dashboard focado em eventos legislativos ocorridos na Câmara dos Deputados, com análise temporal e distribuição por tipo de evento.
+
+#### Widgets:
+* **Counter** - Total de Eventos Registrados
+  - Mostra o total de **2.472 eventos** legislativos capturados em 2024
+  
+* **Line Chart** - Eventos ao Longo do Tempo
+  - Série temporal mostrando a evolução mensal dos eventos parlamentares
+  - Visualiza padrões sazonais e picos de atividade legislativa
+  
+* **Bar Chart** - Top 10 Tipos de Eventos
+  - Ranking horizontal dos tipos de eventos mais frequentes:
+    - Reunião Deliberativa (851 eventos)
+    - Audiência Pública (667 eventos)
+    - Sessão Não Deliberativa Solene (167 eventos)
+  
+* **Table** - Eventos Recentes
+  - Tabela interativa com os 20 eventos mais recentes
+  - Colunas: Data/Hora, Tipo de Evento, Local
+  - Ordenação por data descendente
+
+#### Tabela fonte:
+```sql
+workspace.default.silver_camara_fact_eventos
+```
+
+---
+
+### 💰 Dashboard 2: Despesas por Categoria - Câmara dos Deputados
+
+**Caminho:** `/Users/cafreitas@gmail.com/dashboards/Despesas por Categoria - Câmara dos Deputados.lvdash.json`
+
+Dashboard de análise financeira das despesas parlamentares, agrupadas por categoria de despesa.
+
+#### Widgets:
+* **Counter** - Total de Despesas
+  - Exibe o montante total de **R$ 152,33 milhões** em despesas
+  - Formatação em moeda brasileira (BRL) com abreviação compacta
+  
+* **Pie Chart** - Distribuição por Tipo de Despesa
+  - Gráfico de pizza mostrando a proporção de gastos por categoria
+  - Top 10 categorias com maior volume financeiro
+  - Destaque para: Divulgação da Atividade Parlamentar, Passagem Aérea, Locação de Veículos
+  
+* **Bar Chart** - Top 10 Categorias por Valor
+  - Gráfico de barras horizontal ordenado por valor total
+  - Permite comparação visual rápida entre categorias
+  - Ranking liderado por Divulgação da Atividade Parlamentar
+  
+* **Table** - Detalhes por Categoria
+  - Tabela completa com 5 colunas:
+    - Tipo de Despesa
+    - Total Gasto (R$)
+    - Média por Transação (R$)
+    - Quantidade de Transações
+    - Quantidade de Deputados
+  - Ordenação por valor total descendente
+  - Formatação monetária para valores
+
+#### Tabela fonte:
+```sql
+workspace.default.gold_camara_despesas_por_tipo
+```
+
+---
+
+### 🎨 Características dos Dashboards
+
+#### Design e Layout:
+- ✅ **Layout responsivo** em grade 2x2 para todos os dashboards
+- ✅ **Tema escuro** profissional com high contrast
+- ✅ **Títulos descritivos** em português brasileiro
+- ✅ **Formatação monetária** automática (R$ com abreviação compacta)
+- ✅ **Ordenação inteligente** (DESC por valores/datas)
+
+#### Interatividade:
+- ✅ **Tabelas ordenáveis** por qualquer coluna
+- ✅ **Tooltip em gráficos** com valores detalhados
+- ✅ **Drill-down** disponível em todos os widgets
+- ✅ **Refresh automático** ao atualizar dados fonte
+
+#### Performance:
+- ✅ **Query otimizada** usando tabelas Gold agregadas
+- ✅ **Cache de resultados** para respostas rápidas
+- ✅ **Limite de 20 registros** em tabelas para performance
+
+---
+
+### 📂 Localização dos Dashboards
+
+Os arquivos dos dashboards estão salvos em:
+
+```
+/Users/cafreitas@gmail.com/dashboards/
+├── Eventos Legislativos - Câmara dos Deputados.lvdash.json
+├── Despesas por Categoria - Câmara dos Deputados.lvdash.json
+├── Anomalias em Despesas - Câmara dos Deputados.lvdash.json       (existente)
+├── Ranking de Fornecedores - Câmara dos Deputados.lvdash.json     (existente)
+└── Padrões de Votação - Câmara dos Deputados.lvdash.json          (existente)
+```
+
+**Total:** 5 dashboards publicados | 20+ widgets | 50+ visualizações
+
+---
+
+### 🔗 Como Acessar os Dashboards
+
+#### Via Databricks Workspace:
+
+1. **Acesse o workspace:**
+   ```
+   https://<seu-workspace>.cloud.databricks.com/
+   ```
+
+2. **Navegue até Dashboards:**
+   - Menu lateral: **SQL > Dashboards**
+   - Ou: Menu lateral: **Workspace > /Users/cafreitas@gmail.com/dashboards/**
+
+3. **Abra o dashboard desejado:**
+   - Clique no nome do dashboard
+   - Os dados serão carregados automaticamente
+
+#### Via Catalog Explorer:
+
+1. Acesse: **Data > Catalog Explorer**
+2. Navegue até: `workspace.default`
+3. Visualize as tabelas fonte:
+   - `silver_camara_fact_eventos`
+   - `gold_camara_despesas_por_tipo`
+4. Clique em **"Create Dashboard"** para criar novas visualizações
+
+---
+
+### 🔄 Atualização dos Dashboards
+
+Os dashboards são automaticamente atualizados quando as tabelas fonte são reprocessadas:
+
+```python
+# Re-executar pipeline para atualizar dados
+# 1. Execute o notebook Bronze (ingestão)
+# 2. Execute o notebook Silver (transformação)
+# 3. Execute o notebook Gold (análise)
+# 4. Abra o dashboard - dados atualizados automaticamente
+```
+
+**Frequência recomendada:**
+- **Dados históricos:** Mensal
+- **Dados recentes:** Semanal
+- **Eventos em andamento:** Diário
+
+---
+
 ## 🛠️ Stack Tecnológico
 
 | Componente | Tecnologia | Versão |
@@ -136,6 +304,7 @@ O projeto é composto por 4 notebooks Jupyter executados sequencialmente:
 | **Processing** | PySpark | 3.x |
 | **Storage** | Delta Lake | 2.x |
 | **Catalog** | Unity Catalog | - |
+| **Dashboards** | Databricks AI/BI | Lakeview |
 | **Linguagem** | Python | 3.10+ |
 | **API Client** | requests | 2.31+ |
 | **Concorrência** | concurrent.futures | built-in |
@@ -341,6 +510,25 @@ DESCRIBE EXTENDED workspace.default.silver_camara_dim_deputados;
 
 ---
 
+#### 📊 3.5 Dashboards (Opcional)
+
+Após executar os notebooks, acesse os dashboards criados:
+
+1. **Navegue até Dashboards:**
+   - Menu lateral: **SQL > Dashboards**
+   - Ou: **Workspace > /Users/cafreitas@gmail.com/dashboards/**
+
+2. **Abra os dashboards:**
+   - **Eventos Legislativos - Câmara dos Deputados**
+   - **Despesas por Categoria - Câmara dos Deputados**
+
+3. **Explore as visualizações:**
+   - Clique nos gráficos para drill-down
+   - Ordene tabelas clicando nas colunas
+   - Aplique filtros conforme necessário
+
+---
+
 ### ✅ Passo 4: Validação Final
 
 Execute as queries abaixo para confirmar que tudo está correto:
@@ -409,6 +597,10 @@ LIMIT 10;
 ```
 camara_brasil/
 │
+├── dashboards/                            # 📊 Dashboards Databricks AI/BI
+│   ├── Eventos Legislativos.lvdash.json
+│   └── Despesas por Categoria.lvdash.json
+│
 ├── notebooks/
 │   ├── 01_Bronze_Ingestao.ipynb          # Ingestão de dados brutos
 │   ├── 02_Silver_Transformacao.ipynb     # Transformação Star Schema
@@ -472,6 +664,13 @@ camara_brasil/
 - ✅ **Visível no Catalog Explorer** e via `DESCRIBE EXTENDED`
 - ✅ **23 tabelas documentadas** (7 Bronze + 7 Silver + 9 Gold)
 
+### Dashboards
+- ✅ **2 dashboards interativos** com 8 widgets totais
+- ✅ **Visualizações profissionais**: counters, charts, tables
+- ✅ **Layout responsivo** em grade 2x2
+- ✅ **Formatação automática** de valores monetários e numéricos
+- ✅ **Atualização automática** ao reprocessar dados
+
 ---
 
 ## 🐛 Troubleshooting
@@ -526,6 +725,31 @@ SHOW TABLES IN workspace.default;
 
 ---
 
+### Problema: Dashboard Não Carrega Dados
+
+**Erro:**
+```
+Error loading data: Table not found
+```
+
+**Solução:**
+1. Verificar se as tabelas fonte existem:
+```sql
+SHOW TABLES IN workspace.default LIKE 'silver_camara_fact_eventos';
+SHOW TABLES IN workspace.default LIKE 'gold_camara_despesas_por_tipo';
+```
+
+2. Re-executar os notebooks para gerar os dados:
+   - Execute `01_Bronze_Ingestao`
+   - Execute `02_Silver_Transformacao`
+   - Execute `03_Gold_Analise`
+
+3. Fazer refresh do dashboard:
+   - Abra o dashboard
+   - Clique no botão **"Refresh"** no canto superior direito
+
+---
+
 ### Problema: Erro de Autenticação GitHub
 
 **Erro ao fazer push:**
@@ -562,22 +786,25 @@ Authentication failed
 ## 🗺️ Roadmap
 
 ### Curto Prazo (Q1 2025)
+- [x] Criar 2 dashboards interativos (Eventos e Despesas) ✅
 - [ ] Adicionar testes unitários com `pytest`
 - [ ] Implementar CI/CD com GitHub Actions
-- [ ] Criar dashboards Lakeview para visualização
 - [ ] Adicionar validação de schema com Great Expectations
+- [ ] Criar mais dashboards (Engajamento, Votações, Fornecedores)
 
 ### Médio Prazo (Q2 2025)
 - [ ] Implementar **incremental load** (apenas dados novos)
 - [ ] Adicionar mais anos de dados históricos (2020-2023)
 - [ ] Criar tabelas de auditoria (lineage, data quality)
 - [ ] Implementar alertas automáticos para anomalias
+- [ ] Adicionar filtros dinâmicos nos dashboards
 
 ### Longo Prazo (H2 2025)
 - [ ] Migrar para Lakeflow Spark Declarative Pipelines (DLT)
 - [ ] Adicionar Machine Learning (previsão de despesas)
 - [ ] Criar API REST para consulta de dados
 - [ ] Implementar Data Mesh com ownership por domínio
+- [ ] Publicar dashboards como aplicação web pública
 
 ---
 
@@ -649,11 +876,13 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 - **Delta Lake:** https://delta.io/
 - **PySpark:** https://spark.apache.org/docs/latest/api/python/
 - **Unity Catalog:** https://docs.databricks.com/data-governance/unity-catalog/
+- **Databricks AI/BI Dashboards:** https://docs.databricks.com/dashboards/
 
 ### Artigos e Tutoriais
 - **Arquitetura Medallion:** https://www.databricks.com/glossary/medallion-architecture
 - **Star Schema:** https://en.wikipedia.org/wiki/Star_schema
 - **Z-score Anomaly Detection:** https://en.wikipedia.org/wiki/Standard_score
+- **Data Visualization Best Practices:** https://www.databricks.com/blog/data-visualization-best-practices
 
 ---
 
